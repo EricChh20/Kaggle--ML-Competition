@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import tensorflow as tf
+from tensorflow.keras import datasets, layers, models
+
 from skimage.transform import resize
 
 keras = tf.keras 
@@ -41,24 +43,23 @@ test_X = np.array(im_test)
 
 IMG_SHAPE = (IMG_SIZE, IMG_SIZE, 3)
 # Create the base model from the pre-trained model MobileNet V2
-base_model = tf.keras.applications.InceptionV3(input_shape=IMG_SHAPE,
-                                               include_top=False,
-                                               weights='imagenet')
-base_model.trainable = False 
-#base_model.summary()
-global_average_layer = tf.keras.layers.GlobalAveragePooling2D()
-prediction_layer = keras.layers.Dense(1)
-model = tf.keras.Sequential
-([
-  base_model,
-  global_average_layer,
-  prediction_layer
-])
+
+model = models.Sequential()
+model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=IMG_SHAPE))
+model.add(layers.MaxPooling2D((2, 2)))
+model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+model.add(layers.MaxPooling2D((2, 2)))
+model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+
+model.add(layers.Flatten())
+model.add(layers.Dense(64, activation='relu'))
+model.add(layers.Dense(28, activation='softmax'))
 
 base_learning_rate = 0.0001
-model.compile(optimizer=tf.keras.optimizers.Adam(lr=base_learning_rate),
-              loss='binary_crossentropy',
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
+
 #model.summary()
 history = model.fit(train_X, y_train, epochs=20)
 
