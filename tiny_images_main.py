@@ -36,11 +36,39 @@ test_X = np.array(im_test)
 # print(y_train.shape)
 # print(test_X.shape)
 
-
-# plt.figure(1)
-# plt.imshow(im_train/255)
-# plt.axis('off')
-
-
 # have images show in mac terminal
 #plt.show()
+
+IMG_SHAPE = (IMG_SIZE, IMG_SIZE, 3)
+# Create the base model from the pre-trained model MobileNet V2
+base_model = tf.keras.applications.InceptionV3(input_shape=IMG_SHAPE,
+                                               include_top=False,
+                                               weights='imagenet')
+base_model.trainable = False 
+#base_model.summary()
+global_average_layer = tf.keras.layers.GlobalAveragePooling2D()
+prediction_layer = keras.layers.Dense(1)
+model = tf.keras.Sequential
+([
+  base_model,
+  global_average_layer,
+  prediction_layer
+])
+
+base_learning_rate = 0.0001
+model.compile(optimizer=tf.keras.optimizers.Adam(lr=base_learning_rate),
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
+#model.summary()
+history = model.fit(train_X, y_train, epochs=20)
+
+plt.plot(history.history['accuracy'], label='accuracy')
+# plt.plot(history.history['val_accuracy'], label = 'val_accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.ylim([0.5, 1])
+plt.legend(loc='lower right')
+
+train_loss, train_acc = model.evaluate(test_images,  test_labels, verbose=2)
+
+print(train__acc) 
