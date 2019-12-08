@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf 
 
 from keras.layers import Dense,GlobalAveragePooling2D,Flatten
-from keras.applications import MobileNet
+from keras.applications import InceptionV3
 from keras.preprocessing import image
 from keras.applications.mobilenet import preprocess_input
 from keras.preprocessing.image import ImageDataGenerator
@@ -48,7 +48,7 @@ print(len(test_X))
 print(test_X[1].shape)
 
 # base_model=MobileNet(weights='imagenet',include_top=False) #imports the mobilenet model and discards the last 1000 neuron layer.
-base_model = MobileNet(include_top=False)
+base_model = InceptionV3(weights='imagenet',include_top=False, input_shape=(IMG_SIZE, IMG_SIZE, 3))
 x=base_model.output
 x=GlobalAveragePooling2D()(x)
 x=Dense(1024,activation='relu')(x) #we add dense layers so that the model can learn more complex functions and classify for better results.
@@ -65,18 +65,19 @@ for layer in model.layers[20:]:
     layer.trainable=True
 
 model.compile(optimizer='Adam',loss='sparse_categorical_crossentropy',metrics=['accuracy'])
-model.fit(train_X, y_train, epochs=10)
+model.fit(train_X, y_train, epochs=5)
 
-model.save_weights("mobilenet_tiny_img2.h5")
+model.save_weights("mobilenet_tiny_img.h5")
+#model.load_weights("mobilenet_tiny_img.h5")
 
 pred = model.predict(test_X)
-print(pred[5])
+# print(pred[5])
 
 for i in range(0,len(pred)):
-    max_value = max(pred[i])
-    max_index = np.where(pred[i]==max_value)
-    sol.append(max_index)
+    max_value = np.argmax(pred[i])
+    sol.append(max_value)
+    
 print(sol)
 df = pd.DataFrame(sol, columns=['Label'])
 df.index += 1 # "upgrade" to one-based indexing
-df.to_csv('knn_submission.csv',index_label='ID',columns=['Label'])
+df.to_csv('knn_submission2.csv',index_label='ID',columns=['Label'])
