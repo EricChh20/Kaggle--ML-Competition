@@ -53,10 +53,6 @@ train_X = np.array(im_train)
 test_X = np.array(im_test)
 y_train = keras.utils.to_categorical(y_train, num_classes)
 # X_train, X_test2, y_train, y_test = train_test_split(train_X, y_train, test_size=0.2, random_state=42)
-# print(len(train_X))
-# print(train_X[1].shape)
-# print(len(test_X))
-# print(test_X[1].shape)
 
 #----------------------- DATA AUGMENTATION ----------------------------
 datagen = ImageDataGenerator(
@@ -114,6 +110,8 @@ model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='categorical_crossent
 model.fit_generator(datagen.flow(train_X, y_train, batch_size=32),
                     steps_per_epoch=len(train_X) / 32, epochs=epochs)
 
+
+# model.fit(train_X, y_train, epochs=epochs)
 model.save_weights("mobilenet_tiny_img.h5")
 #model.load_weights("mobilenet_tiny_img.h5")
 
