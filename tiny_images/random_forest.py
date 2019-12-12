@@ -20,7 +20,7 @@ y_train = np.loadtxt(train_label, dtype=np.uint8, delimiter=',', skiprows=1)[:,-
 # X_train, X_test2, y_train, y_test = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
 
 #best found parameters from grid search
-clf = RandomForestClassifier()
+clf = RandomForestClassifier(n_estimators=3000, max_depth=15, max_features=15)
 # perform grid search on best parameters 
 # param_grid = {
 #                  'n_estimators': [500, 1000, 1500, 2000, 2500, 3000],
